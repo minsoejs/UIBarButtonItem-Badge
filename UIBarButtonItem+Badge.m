@@ -20,12 +20,15 @@ NSString const *UIBarButtonItem_badgeOriginYKey = @"UIBarButtonItem_badgeOriginY
 NSString const *UIBarButtonItem_shouldHideBadgeAtZeroKey = @"UIBarButtonItem_shouldHideBadgeAtZeroKey";
 NSString const *UIBarButtonItem_shouldAnimateBadgeKey = @"UIBarButtonItem_shouldAnimateBadgeKey";
 NSString const *UIBarButtonItem_badgeValueKey = @"UIBarButtonItem_badgeValueKey";
+NSString const *UIBarButtonItem_badgeBorderWidthKey = @"UIBarButtonItem_badgeBorderWidthKey";
+NSString const *UIBarButtonItem_badgeBorderColorKey = @"UIBarButtonItem_badgeBorderColorKey";
 
 @implementation UIBarButtonItem (Badge)
 
 @dynamic badgeValue, badgeBGColor, badgeTextColor, badgeFont;
 @dynamic badgePadding, badgeMinSize, badgeOriginX, badgeOriginY;
 @dynamic shouldHideBadgeAtZero, shouldAnimateBadge;
+@dynamic badgeBorderWidth, badgeBorderColor;
 
 - (void)badgeInit
 {
@@ -52,6 +55,8 @@ NSString const *UIBarButtonItem_badgeValueKey = @"UIBarButtonItem_badgeValueKey"
     self.badgeOriginY   = -4;
     self.shouldHideBadgeAtZero = YES;
     self.shouldAnimateBadge = YES;
+    self.badgeBorderWidth = 0;
+    self.badgeBorderColor = [UIColor whiteColor];
 }
 
 #pragma mark - Utility methods
@@ -63,6 +68,8 @@ NSString const *UIBarButtonItem_badgeValueKey = @"UIBarButtonItem_badgeValueKey"
     self.badge.textColor        = self.badgeTextColor;
     self.badge.backgroundColor  = self.badgeBGColor;
     self.badge.font             = self.badgeFont;
+    self.badge.layer.borderColor = self.badgeBorderColor.CGColor;
+    self.badge.layer.borderWidth = self.badgeBorderWidth;
     
     if (!self.badgeValue || [self.badgeValue isEqualToString:@""] || ([self.badgeValue isEqualToString:@"0"] && self.shouldHideBadgeAtZero)) {
         self.badge.hidden = YES;
@@ -104,6 +111,7 @@ NSString const *UIBarButtonItem_badgeValueKey = @"UIBarButtonItem_badgeValueKey"
     self.badge.layer.masksToBounds = YES;
     self.badge.frame = CGRectMake(self.badgeOriginX, self.badgeOriginY, minWidth + padding, minHeight + padding);
     self.badge.layer.cornerRadius = (minHeight + padding) / 2;
+    
 }
 
 // Handle the badge changing value
@@ -232,6 +240,31 @@ NSString const *UIBarButtonItem_badgeValueKey = @"UIBarButtonItem_badgeValueKey"
     }
 }
 
+// Border Value for the badge
+- (CGFloat)badgeBorderWidth {
+    NSNumber *number = objc_getAssociatedObject(self, &UIBarButtonItem_badgeBorderWidthKey);
+    return number.floatValue;
+}
+
+- (void)setBadgeBorderWidth:(CGFloat)badgeBorderWidth {
+    objc_setAssociatedObject(self, &UIBarButtonItem_badgeBorderWidthKey, @(badgeBorderWidth), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if (self.badge) {
+        [self refreshBadge];
+    }
+}
+
+-(UIColor *)badgeBorderColor {
+    return objc_getAssociatedObject(self, &UIBarButtonItem_badgeBorderColorKey);
+}
+
+-(void)setBadgeBorderColor:(UIColor *)badgeBorderColor
+{
+    objc_setAssociatedObject(self, &UIBarButtonItem_badgeBorderColorKey, badgeBorderColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if (self.badge) {
+        [self refreshBadge];
+    }
+}
+
 // Minimum size badge to small
 -(CGFloat) badgeMinSize {
     NSNumber *number = objc_getAssociatedObject(self, &UIBarButtonItem_badgeMinSizeKey);
@@ -272,6 +305,8 @@ NSString const *UIBarButtonItem_badgeValueKey = @"UIBarButtonItem_badgeValueKey"
         [self updateBadgeFrame];
     }
 }
+
+
 
 // In case of numbers, remove the badge when reaching zero
 -(BOOL) shouldHideBadgeAtZero {

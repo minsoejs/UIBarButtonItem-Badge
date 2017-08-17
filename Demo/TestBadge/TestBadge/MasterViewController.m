@@ -54,7 +54,8 @@
     self.navigationItem.leftBarButtonItem = navRightButton;
     self.navigationItem.leftBarButtonItem.badgeValue = @"2";
     self.navigationItem.leftBarButtonItem.badgeBGColor = [UIColor orangeColor];
-
+    self.navigationItem.leftBarButtonItem.badgeBorderWidth = 2;
+    self.navigationItem.leftBarButtonItem.badgeBorderColor = [UIColor blueColor];
     
     [NSTimer scheduledTimerWithTimeInterval:1.0
                                      target:self
