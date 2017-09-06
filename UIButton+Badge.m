@@ -59,12 +59,6 @@ NSString const *UIButton_badgeBorderColorKey = @"UIButton_badgeBorderColorKey";
     self.badge.font             = self.badgeFont;
     self.badge.layer.borderColor = self.badgeBorderColor.CGColor;
     self.badge.layer.borderWidth = self.badgeBorderWidth;
-    if (!self.badgeValue || [self.badgeValue isEqualToString:@""] || ([self.badgeValue isEqualToString:@"0"] && self.shouldHideBadgeAtZero)) {
-        self.badge.hidden = YES;
-    } else {
-        self.badge.hidden = NO;
-        [self updateBadgeValueAnimated:YES];
-    }
 }
 
 - (CGSize) badgeExpectedSize
