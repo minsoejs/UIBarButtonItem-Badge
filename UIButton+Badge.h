@@ -32,4 +32,8 @@
 // Badge has a bounce animation when value changes
 @property BOOL shouldAnimateBadge;
 
+@property (nonatomic) CGFloat badgeBorderWidth;
+@property (nonatomic) UIColor *badgeBorderColor;
+
+
 @end

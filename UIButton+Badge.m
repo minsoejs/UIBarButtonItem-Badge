@@ -20,12 +20,15 @@ NSString const *UIButton_badgeOriginYKey = @"UIButton_badgeOriginYKey";
 NSString const *UIButton_shouldHideBadgeAtZeroKey = @"UIButton_shouldHideBadgeAtZeroKey";
 NSString const *UIButton_shouldAnimateBadgeKey = @"UIButton_shouldAnimateBadgeKey";
 NSString const *UIButton_badgeValueKey = @"UIButton_badgeValueKey";
+NSString const *UIButton_badgeBorderWidthKey = @"UIButton_badgeBorderWidthKey";
+NSString const *UIButton_badgeBorderColorKey = @"UIButton_badgeBorderColorKey";
 
 @implementation UIButton (Badge)
 
 @dynamic badgeValue, badgeBGColor, badgeTextColor, badgeFont;
 @dynamic badgePadding, badgeMinSize, badgeOriginX, badgeOriginY;
 @dynamic shouldHideBadgeAtZero, shouldAnimateBadge;
+@dynamic badgeBorderWidth, badgeBorderColor;
 
 - (void)badgeInit
 {
@@ -39,6 +42,8 @@ NSString const *UIButton_badgeValueKey = @"UIButton_badgeValueKey";
     self.badgeOriginY   = -4;
     self.shouldHideBadgeAtZero = YES;
     self.shouldAnimateBadge = YES;
+    self.badgeBorderWidth = 0;
+    self.badgeBorderColor = [UIColor whiteColor];
     // Avoids badge to be clipped when animating its scale
     self.clipsToBounds = NO;
 }
@@ -52,6 +57,14 @@ NSString const *UIButton_badgeValueKey = @"UIButton_badgeValueKey";
     self.badge.textColor        = self.badgeTextColor;
     self.badge.backgroundColor  = self.badgeBGColor;
     self.badge.font             = self.badgeFont;
+    self.badge.layer.borderColor = self.badgeBorderColor.CGColor;
+    self.badge.layer.borderWidth = self.badgeBorderWidth;
+    if (!self.badgeValue || [self.badgeValue isEqualToString:@""] || ([self.badgeValue isEqualToString:@"0"] && self.shouldHideBadgeAtZero)) {
+        self.badge.hidden = YES;
+    } else {
+        self.badge.hidden = NO;
+        [self updateBadgeValueAnimated:YES];
+    }
 }
 
 - (CGSize) badgeExpectedSize
@@ -212,6 +225,31 @@ NSString const *UIButton_badgeValueKey = @"UIButton_badgeValueKey";
     objc_setAssociatedObject(self, &UIButton_badgePaddingKey, number, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     if (self.badge) {
         [self updateBadgeFrame];
+    }
+}
+
+// Border Value for the badge
+- (CGFloat)badgeBorderWidth {
+    NSNumber *number = objc_getAssociatedObject(self, &UIButton_badgeBorderWidthKey);
+    return number.floatValue;
+}
+
+- (void)setBadgeBorderWidth:(CGFloat)badgeBorderWidth {
+    objc_setAssociatedObject(self, &UIButton_badgeBorderWidthKey, @(badgeBorderWidth), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if (self.badge) {
+        [self refreshBadge];
+    }
+}
+
+-(UIColor *)badgeBorderColor {
+    return objc_getAssociatedObject(self, &UIButton_badgeBorderColorKey);
+}
+
+-(void)setBadgeBorderColor:(UIColor *)badgeBorderColor
+{
+    objc_setAssociatedObject(self, &UIButton_badgeBorderColorKey, badgeBorderColor, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if (self.badge) {
+        [self refreshBadge];
     }
 }
 
